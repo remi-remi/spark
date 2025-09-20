@@ -1,5 +1,5 @@
 
-# SPARK is not ready for now, please dont try to build a project with is
+# SPARK is not ready for now, please dont try to build a project with it
 # the next lines are a roadmap, but Spark dont achive his objectives for now 
 
 Spark is a full web app boilerplate designed to help beginners start building modern applications with clarity and good practices.  
