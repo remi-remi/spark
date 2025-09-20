@@ -1,0 +1,9 @@
+DO NOT REPLACE THE .ENV WITH ANY .ENV FROM A NEW UPDATE
+
+.env.*.prod are related to your situation and only your.
+
+.env.dev should only be used for local development (only for the maintainer)
+
+if you have a fallback server or a dev server it should use .env.*.prod because .env.*.dev are not compatible with containers 
+
+and sure you can customise your .env, dont forget to reflect db password changes manually.

@@ -1,0 +1,17 @@
+# default.conf.template
+server {
+    listen 80;
+    server_name ${DOMAIN};
+
+    # Gestion des requêtes Let's Encrypt
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;  # Certbot place les fichiers ici
+        try_files $uri =404;
+    }
+
+    # Redirection du reste du trafic HTTP vers HTTPS
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
