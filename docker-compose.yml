@@ -1,0 +1,76 @@
+services:
+
+  mariadb:
+    container_name: db
+    image: mariadb
+    env_file:
+      - ./ENVIRONMENT/.env.DB-API.dev
+    environment:
+      TZ: UTC
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+
+  api:
+    container_name: api
+    build:
+      context: ./api
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./ENVIRONMENT/.env.API.dev:/app/ENVIRONMENT/.env.API.dev
+      - ./ENVIRONMENT/.env.API.prod:/app/ENVIRONMENT/.env.API.prod
+      - ./ENVIRONMENT/.env.DB-API.prod:/app/ENVIRONMENT/.env.DB-API.prod
+      - ./ENVIRONMENT/.env.DB-API.dev:/app/ENVIRONMENT/.env.DB-API.dev
+      - ./ENVIRONMENT/.env.GLOBAL:/app/ENVIRONMENT/.env.GLOBAL
+
+  client:
+    container_name: client
+    build:
+      context: .
+      dockerfile: ./client/Dockerfile
+    expose:
+      - "8080"
+    environment:
+      - NODE_ENV=production # TODO, rename this to 'container'
+
+
+  nginx-proxy:
+    container_name: nginx-proxy
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./proxy/nginx.conf.template:/etc/nginx/nginx.conf.template
+      - ./proxy/default.conf.template:/etc/nginx/conf.d/default.conf.template
+      - ./proxy/certbot:/var/www/certbot
+      - ./proxy/ssl:/etc/nginx/ssl  
+      - ./proxy/setup-nginx.sh:/usr/local/bin/setup-nginx.sh
+    env_file:
+      - ./ENVIRONMENT/.env.PROXY-CERTBOT.prod
+    entrypoint: /usr/local/bin/setup-nginx.sh
+    depends_on:
+      - api
+      - client
+
+
+  certbot:
+    container_name: certbot
+    build:
+      context: ./certbot
+      dockerfile: Dockerfile
+    depends_on:
+      - nginx-proxy
+    volumes:
+      - ./proxy/certbot:/var/www/certbot
+      - ./proxy/ssl:/etc/letsencrypt
+    env_file:
+      - ./ENVIRONMENT/.env.PROXY-CERTBOT.prod
+    entrypoint: /usr/local/bin/certbot-entrypoint.sh
+
+volumes:
+  mariadb_data:
+    driver: local

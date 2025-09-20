@@ -1,3 +1,7 @@
+
+# SPARK is now ready for now, please dont try to build a project with is
+# the next lines are a roadmap, but Spark dont achive his objectives for now 
+
 Spark is a full web app boilerplate designed to help beginners start building modern applications with clarity and good practices.  
 It is not meant to be a universal solution, but rather a practical guide built on a solid and modern stack.
 
